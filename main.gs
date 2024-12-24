@@ -1,15 +1,27 @@
 const main = () => {
   setTrigger()
 
+//retrieve calendar ids from script properties and store them into constants
+
   const MAIN_CALENDAR_ID = PropertiesService.getScriptProperties().getProperty('MAIN_CALENDAR_ID')
   const TODOIST_CALENDAR_ID = PropertiesService.getScriptProperties().getProperty('TODOIST_CALENDAR_ID')
 
+// --retrieve today's date--
+// Date is a built-in JS object working with dates and times, new Date() creating a Date object storing the current date and time when code is executed
+
   const now = new Date()
+
+// Using the previous constants, retreieve events for the current tieme
+
   const mainEvents = CalendarApp.getCalendarById(MAIN_CALENDAR_ID).getEventsForDay(now)
   const todoistEvents = CalendarApp.getCalendarById(TODOIST_CALENDAR_ID).getEventsForDay(now)
 
+// Generate event count and message (fuction explained later)
+
   const { message: eventMessage, count: eventCount } = generateEventMessage(mainEvents, now)
   const { message: todoMessage, count: todoCount } = generateEventMessage(todoistEvents, now)
+
+// If event counts more than 0, send a notification on LINE
 
   if (eventCount > 0 || todoCount > 0) {
     const message = `\n本日の予定をお知らせします（https://calendar.google.com/calendar/u/0/r/day）\n\n\`✅ToDo (${todoCount})\`\n${todoMessage}\n\n\`🗓️予定 (${eventCount})\`\n${eventMessage}`
@@ -18,15 +30,37 @@ const main = () => {
 }
 
 // --- Trigger Function ---
+
+// Set a trigger
+
 const setTrigger = () => {
+
+  // Delete previous (one-time) trigger
   deleteAllTriggers()
 
+// -- Set next trigger --
   const time = new Date()
 
+// time.getDate(): retrieves current day of month
+// +1: increments the day by one
+// time.setDate(): update Date to reflect the new day → updates time object to the same time on the next day
+
   time.setDate(time.getDate()+1)
-  time.setHours(15)
+
+// Sets the time object to 8AM
+// setHours() works for the 24-hour time frmat
+
+  time.setHours(8)
   time.setMinutes(0)
   time.setSeconds(0)
+
+// → time set to 8:00:00 AM tomorrow
+
+// Creates a new trigger for the main function
+// timeBased(): specifies the triggger type
+// at(time): Set the time when trigger will fire
+// create(): Finalize and create trigger
+
   ScriptApp.newTrigger('main').timeBased().at(time).create()
 }
 
