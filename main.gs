@@ -17,7 +17,10 @@ const main = () => {
   const todoistEvents = CalendarApp.getCalendarById(TODOIST_CALENDAR_ID).getEventsForDay(now)
 
 // Retrieve location?
-// [0]: array
+// [0]: array, as the getEventsForDay(now) returns an array of events
+// mainEvents is an array containing all events that occur on the current day in the specifies calendar
+// If no events exist for today, mainEvents will be an empty array [] and trying to access it will return undefined
+
   const mainLocation = mainEvents[0].getLocation()
 
 // Generate event count and message (fuction explained later)
