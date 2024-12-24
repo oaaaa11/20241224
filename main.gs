@@ -16,6 +16,10 @@ const main = () => {
   const mainEvents = CalendarApp.getCalendarById(MAIN_CALENDAR_ID).getEventsForDay(now)
   const todoistEvents = CalendarApp.getCalendarById(TODOIST_CALENDAR_ID).getEventsForDay(now)
 
+// Retrieve location?
+// [0]: array
+  const mainLocation = mainEvents[0].getLocation()
+
 // Generate event count and message (fuction explained later)
 
   const { message: eventMessage, count: eventCount } = generateEventMessage(mainEvents, now)
@@ -24,7 +28,7 @@ const main = () => {
 // If event counts more than 0, send a notification on LINE
 
   if (eventCount > 0 || todoCount > 0) {
-    const message = `\n本日の予定をお知らせします（https://calendar.google.com/calendar/u/0/r/day）\n\n\`✅ToDo (${todoCount})\`\n${todoMessage}\n\n\`🗓️予定 (${eventCount})\`\n${eventMessage}`
+    const message = `\n本日の予定をお知らせします（https://calendar.google.com/calendar/u/0/r/day）\n\n\`✅ToDo (${todoCount})\`\n${todoMessage}\n\n\`🗓️予定 (${eventCount})\`\n${eventMessage}\n${mainLocation}`
     sendLineNotify(message)
   }
 }
