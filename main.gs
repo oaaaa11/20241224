@@ -82,6 +82,12 @@ const deleteAllTriggers = () => {
   })
 }
 
+// Keyword-to-Emoji
+
+const keywordEmojiMap = {
+  "重要": "🔴",
+  "誕生日": "🎂"
+}
 
 // ------------------------
 
@@ -90,28 +96,39 @@ const formatEvent = (event, now) => {
   const dateFormat = 'M/d'
   const dateTimeFormat = 'HH:mm'
 
+  const combinedText = `${event.getTitle()}`
+
   const startDateTime = event.getStartTime()
   const endDateTime = new Date(event.getEndTime().getTime() - 1) // Subtract 1 millisecond to account for Google Calendar's behavior
   const startDate = Utilities.formatDate(startDateTime, timeZone, dateFormat)
   const endDate = Utilities.formatDate(endDateTime, timeZone, dateFormat)
   const todayDate = Utilities.formatDate(now, timeZone, dateFormat)
 
+  // Find emoji
+  let emoji = ""
+  for (const keyword in keywordEmojiMap){
+    if (combinedText.includes(keyword)){
+      emoji = keywordEmojiMap[keyword]
+      break
+    }
+  }
+
   if (event.isAllDayEvent()) {
     if (startDate === endDate) {
-      return `*All Day* : ${event.getTitle()}`
+      return `${emoji} *All Day* : ${event.getTitle()}`
     } else {
-      return `*All Day (${startDate} - ${endDate})* : ${event.getTitle()}`
+      return `${emoji}*All Day (${startDate} - ${endDate})* : ${event.getTitle()}`
     }
   } else {
     const adjustedEndDateTime = new Date(endDateTime.getTime() + 1)
     if (startDate === todayDate && startDate === endDate) {
-      return `${Utilities.formatDate(startDateTime, timeZone, dateTimeFormat)} - ${Utilities.formatDate(
+      return `${emoji} ${Utilities.formatDate(startDateTime, timeZone, dateTimeFormat)} - ${Utilities.formatDate(
         adjustedEndDateTime,
         timeZone,
         dateTimeFormat
       )}: ${event.getTitle()}`
     } else {
-      return `${Utilities.formatDate(startDateTime, timeZone, dateTimeFormat)} - ${endDate} ${Utilities.formatDate(
+      return `${emoji} ${Utilities.formatDate(startDateTime, timeZone, dateTimeFormat)} - ${endDate} ${Utilities.formatDate(
         adjustedEndDateTime,
         timeZone,
         dateTimeFormat
